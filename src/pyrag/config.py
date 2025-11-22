@@ -16,7 +16,7 @@ class EmbeddingConfig:
 class QdrantConfig:
     host: str
     port: int
-
+    dim: int
 
 @dataclass(slots=True)
 class Config:

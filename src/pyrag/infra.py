@@ -13,6 +13,7 @@ async def get_embeddings_text(
         model: str,
         data: list[str]
 ) -> list[tuple[list[float], str]]:
+
     result = embed.embeddings.create(
         model = model,
         input = data
@@ -37,7 +38,7 @@ async def generate_collection(qdrant: QdrantClient) -> str:
         name,
         vectors_config={
             "cvector": VectorParams(
-                size = 768,
+                size = 3072,
                 distance = Distance.COSINE,
             )
         }

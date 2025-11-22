@@ -14,7 +14,7 @@ async def create_kb(qdrant: FromDishka[QdrantClient]) -> str:
 
 
 @router.post("/upload_kb/{collection}")
-async def create_kb(collection: str, 
+async def upload_kb(collection: str, 
                     file: Annotated[UploadFile, File()],
                     config: FromDishka[Config],
                     qdrant: FromDishka[QdrantClient],
