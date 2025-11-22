@@ -1,0 +1,7 @@
+[embedding]
+base_url="http://localhost:11434/v1"
+api_key="ollama"
+model="nomic-embed-text"
+[qdrant]
+host="localhost"
+port=6333
