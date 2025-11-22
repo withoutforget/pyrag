@@ -1,4 +1,7 @@
+from dataclasses import dataclass
 import io
+import json
+import logging
 import uuid
 import openai
 from qdrant_client import QdrantClient
@@ -7,6 +10,33 @@ from pyrag.config import Config
 
 from PyPDF2 import  PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+class LLMRequest:
+    def __init__(self, config: Config, embed: openai.Client, qdrant: QdrantClient):
+        self.embed = embed
+        self.llm = openai.Client(
+            base_url = config.llm.base_url,
+            api_key = config.llm.api_key
+        )
+        self.config = config
+        self.qdrant = qdrant
+    
+    async def __call__(self, query: str, collection: str) -> str:
+        q = await get_embeddings_text(self.embed, self.config.embedding.model, data = query)
+
+        result = await get_from_qdrant(self.qdrant, collection, q)
+
+        request = json.dumps(
+            {"info": result, "query": query}
+        )
+        logging.info("%s\n_______\n%s", result, query)
+        response = self.llm.responses.create(
+            model = self.config.llm.model,
+            instructions="You must use data from `info` to answer on `query`",
+            input = request,
+        )
+
+        return response.output_text
 
 
 async def get_embeddings_text(

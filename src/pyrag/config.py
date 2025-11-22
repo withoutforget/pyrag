@@ -11,6 +11,13 @@ class EmbeddingConfig:
     api_key: str
     model: str
 
+@dataclass(slots=True)
+class LLMConfig:
+    base_url: str
+    api_key: str
+    model: str
+
+
 
 @dataclass(slots=True)
 class QdrantConfig:
@@ -22,6 +29,7 @@ class QdrantConfig:
 class Config:
     embedding: EmbeddingConfig
     qdrant: QdrantConfig
+    llm: LLMConfig
 
 
 def get_config() -> Config:

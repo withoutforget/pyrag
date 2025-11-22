@@ -1,10 +1,13 @@
 from fastapi import FastAPI
-from dishka import make_async_container, Provider, provide, Scope
+from dishka import make_async_container, Provider, provide, Scope, provide_all
 from dishka.integrations.fastapi import setup_dishka
 import openai
 from qdrant_client import QdrantClient
 from pyrag.config import get_config, Config
+from pyrag.infra import LLMRequest
 from pyrag.presentation import router
+
+
 
 class InfraProvider(Provider):
     @provide(scope=Scope.APP)
@@ -19,6 +22,7 @@ class InfraProvider(Provider):
             base_url = config.embedding.base_url,
             api_key = config.embedding.api_key,
         )
+    get_clients = provide_all(LLMRequest, scope=Scope.APP)
     
 container = make_async_container(
     InfraProvider(),

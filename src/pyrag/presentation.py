@@ -4,7 +4,7 @@ from dishka.integrations.fastapi import FromDishka, DishkaRoute
 import openai
 from qdrant_client import QdrantClient
 from pyrag.config import Config
-from pyrag.infra import embeddings_to_points, generate_collection, get_embeddings_text, get_from_qdrant, parse_pdf, splitter, upload_to_collection
+from pyrag.infra import LLMRequest, embeddings_to_points, generate_collection, get_embeddings_text, get_from_qdrant, parse_pdf, splitter, upload_to_collection
 
 router = APIRouter(route_class=DishkaRoute, prefix="/api")
 
@@ -57,3 +57,8 @@ async def search_kb(collection: str,
     result = await get_from_qdrant(qdrant, collection, q)
     return result
     
+@router.post("/llm/{collection}")
+async def search_kb(collection: str, 
+                    query: Annotated[list[str], Body()],
+                    llm: FromDishka[LLMRequest]) -> str:
+    return await llm(query, collection)
