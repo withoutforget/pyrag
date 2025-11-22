@@ -3,6 +3,7 @@ import uuid
 import openai
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
+from pyrag.config import Config
 
 from PyPDF2 import  PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -31,14 +32,14 @@ async def embeddings_to_points(embds: tuple[list[float], str]) -> list[PointStru
         for v, s in embds
     ]
 
-async def generate_collection(qdrant: QdrantClient) -> str:
+async def generate_collection(qdrant: QdrantClient, config: Config) -> str:
     name = str(uuid.uuid4())
 
     res = qdrant.create_collection(
         name,
         vectors_config={
             "cvector": VectorParams(
-                size = 3072,
+                size = config.qdrant.dim,
                 distance = Distance.COSINE,
             )
         }
@@ -75,15 +76,15 @@ async def get_from_qdrant(
         result.append(list(filter(lambda p: p is not None, res)))
     return result
 
-async def parse_pdf(bytes: bytes) -> list[str]:
-    pdf = PdfReader(io.BytesIO(bytes))
-    text = '\n'.join(t.extract_text() for t in pdf.pages)
-
+async def splitter(text: str, chunk_size = 100, chunk_overlap = 25) -> list[str]:
     text_splitter = RecursiveCharacterTextSplitter(
             separators=['\n'],
-            chunk_size=100,
-            chunk_overlap=25,
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
             length_function=len,
         )
-    
     return text_splitter.split_text(text)
+
+async def parse_pdf(bytes: bytes) -> str:
+    pdf = PdfReader(io.BytesIO(bytes))
+    return '\n'.join(t.extract_text() for t in pdf.pages)
