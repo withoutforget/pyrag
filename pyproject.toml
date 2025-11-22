@@ -1,0 +1,18 @@
+[project]
+name = "pyrag"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "adaptix>=3.0.0b11",
+    "langchain-text-splitters>=1.0.0",
+    "openai>=2.8.1",
+    "pypdf2>=3.0.1",
+    "qdrant-client>=1.16.0",
+]
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.uv.sources]
+ssgame = { path = "src/pyrag" }  # явное указание пути

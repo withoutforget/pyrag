@@ -5,6 +5,9 @@ import openai
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance, QueryRequest
 
+from PyPDF2 import  PdfReader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 from pyrag.config import get_config
 
 async def get_embeddings_text(
@@ -72,10 +75,6 @@ async def get_from_qdrant(
                            if p.payload is not None]
         result.append(list(filter(lambda p: p is not None, res)))
     return result
-
-from PyPDF2 import  PdfReader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-
 
 async def parse_pdf(path: str) -> list[str]:
     pdf = PdfReader(open(path, "rb"))
