@@ -9,33 +9,32 @@ from pyrag.infra.openai.llm import LLMClient, LLMRequest
 class OpenAIProdiver(Provider):
 
     @provide(scope=Scope.REQUEST)
-    async def get_embedder_config(self, config: EmbeddingConfig) -> EmbedderClient:
+    async def get_embedder_config(self, config: Config) -> EmbedderClient:
         return EmbedderClient(
-            base_url = config.base_url,
-            api_key = config.api_key,
+            base_url = config.embedding.base_url,
+            api_key = config.embedding.api_key,
         )
     
     @provide(scope=Scope.REQUEST)
     async def get_embedder(self, 
-                                  config: EmbeddingConfig,
+                                  config: Config,
                                   client: EmbedderClient) -> Embedder:
         return Embedder(
             client = client,
-            model = config.model,
+            model = config.embedding.model,
         )
     
     @provide(scope=Scope.REQUEST)
-    async def get_llm_config(self, config: LLMConfig) -> LLMClient:
+    async def get_llm_config(self, config: Config) -> LLMClient:
         return LLMClient(
-            base_url = config.base_url,
-            api_key = config.api_key,
+            base_url = config.llm.base_url,
+            api_key = config.llm.api_key,
         )
     
     @provide(scope=Scope.REQUEST)
     async def get_llm(self,
-                       config: LLMConfig,
+                       config: Config,
                        client: LLMClient) -> LLMRequest:
-        raise NotImplementedError("Watch here.")
         return LLMRequest(
             client = client,
             model = config.model,

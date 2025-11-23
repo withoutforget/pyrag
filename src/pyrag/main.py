@@ -5,27 +5,16 @@ import openai
 from qdrant_client import QdrantClient
 from pyrag.config import get_config, Config
 from pyrag.infra import LLMRequest
+from pyrag.infra.openai.provider import OpenAIProdiver
+from pyrag.infra.parsers.provider import ParserProdiver
+from pyrag.infra.qdrant.provider import QdrantProdiver
 from pyrag.presentation import router
 
-
-
-class InfraProvider(Provider):
-    @provide(scope=Scope.APP)
-    async def get_qdrant(self, config: Config) -> QdrantClient:
-        return QdrantClient(
-            host = config.qdrant.host,
-            port = config.qdrant.port,
-        )
-    @provide(scope=Scope.APP)
-    async def get_openai(self, config: Config) -> openai.Client:
-        return openai.Client(
-            base_url = config.embedding.base_url,
-            api_key = config.embedding.api_key,
-        )
-    get_clients = provide_all(LLMRequest, scope=Scope.APP)
     
 container = make_async_container(
-    InfraProvider(),
+    OpenAIProdiver(),
+    ParserProdiver(),
+    QdrantProdiver(),
     context = {
         Config: get_config(),
     }

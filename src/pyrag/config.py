@@ -16,6 +16,7 @@ class LLMConfig:
     base_url: str
     api_key: str
     model: str
+    prompt: str
 
 
 

@@ -47,6 +47,7 @@ class Qdrant:
         collection_name: str,
         data: list[Embedding]
     ) -> list[list[str]]:
+        # TODO: fix this one return value to list[dict]
         result: list[list[str]] = []
         for slice, _ in data:
             response = self.client.query_points(
