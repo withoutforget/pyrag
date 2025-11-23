@@ -5,3 +5,9 @@ model="nomic-embed-text"
 [qdrant]
 host="localhost"
 port=6333
+dim=768
+[llm]
+base_url="INSERT YOUR URL"
+api_key="INSERT YOUR API-KEY"
+model="gpt-5-nano"
+prompt="Ответь на request используя метаинформацию"
