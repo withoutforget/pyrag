@@ -1,5 +1,7 @@
 
 from dataclasses import dataclass
+import json
+import logging
 
 import openai
 
@@ -12,10 +14,11 @@ class LLMRequest:
     prompt: str
 
     async def ask(self, text: str, rag: list[dict]) -> str:
-        input = {
-            "request": text,
-            "additional_data": rag,
-        }
+        input = "{rag}\n\n{text}".format(
+            rag = rag, text = text
+        )
+
+        logging.critical("input: `%s`", input)
 
         response = self.client.responses.create(
             model = self.model,

@@ -47,16 +47,21 @@ class Qdrant:
         collection_name: str,
         data: list[Embedding]
     ) -> list[list[str]]:
-        # TODO: fix this one return value to list[dict]
-        result: list[list[str]] = []
-        for slice, _ in data:
+        # TODO: fix this one to more complex struct of qdrant
+        result: list[dict] = []
+        for embedding in data:
             response = self.client.query_points(
                 collection_name=collection_name,
-                query = slice,
+                query = embedding.vector,
                 using="cvector"
             )
             res: list[str] = [p.payload.get("text")
                             for p in response.points 
                             if p.payload is not None]
-            result.append(list(filter(lambda p: p is not None, res)))
+            result.append(
+                {
+                    i: v
+                    for i, v in enumerate(list(filter(lambda p: p is not None, res)))
+                }
+            )
         return result

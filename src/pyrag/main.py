@@ -1,10 +1,7 @@
 from fastapi import FastAPI
-from dishka import make_async_container, Provider, provide, Scope, provide_all
+from dishka import make_async_container
 from dishka.integrations.fastapi import setup_dishka
-import openai
-from qdrant_client import QdrantClient
 from pyrag.config import get_config, Config
-from pyrag.infra import LLMRequest
 from pyrag.infra.openai.provider import OpenAIProdiver
 from pyrag.infra.parsers.provider import ParserProdiver
 from pyrag.infra.qdrant.provider import QdrantProdiver

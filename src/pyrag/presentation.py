@@ -1,12 +1,10 @@
 from typing import Annotated
 from fastapi import APIRouter, Body, File, HTTPException, UploadFile
 from dishka.integrations.fastapi import FromDishka, DishkaRoute
-import openai
-from qdrant_client import QdrantClient
-from pyrag.config import Config
 from pyrag.infra.openai.embedder import Embedder
 from pyrag.infra.openai.llm import LLMRequest
 from pyrag.infra.parsers.pdf import PDFParser
+from pyrag.infra.parsers.splitter import TextSplitter
 from pyrag.infra.qdrant.qdrant import Qdrant
 
 router = APIRouter(route_class=DishkaRoute, prefix="/api")
@@ -21,6 +19,7 @@ async def upload_kb(collection: str,
                     file: Annotated[UploadFile, File()],
                     qdrant: FromDishka[Qdrant],
                     pdf_parser: FromDishka[PDFParser],
+                    text_splitter: FromDishka[TextSplitter],
                     embedder:  FromDishka[Embedder],
                     chunk_size: int =  Body(default = 100),
                     chunk_overlap: int =  Body(default = 25),) -> None:
@@ -32,7 +31,7 @@ async def upload_kb(collection: str,
     else:
         raise HTTPException(400, detail="Unknown content_type")    
 
-    text = await parsers(raw_text, chunk_size = chunk_size, chunk_overlap = chunk_overlap)
+    text = await text_splitter(raw_text, chunk_size = chunk_size, chunk_overlap = chunk_overlap)
 
     embeddings = await embedder.get_embeddings_text(text)
 

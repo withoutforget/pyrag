@@ -12,15 +12,14 @@ class Embedding:
     def toPointStruct(self) -> PointStruct:
         return PointStruct(
             id = uuid.uuid4(),
-            vector = { "cvector": self.vector},
+            vector = { "cvector": self.vector },
             payload = { "text": self.value }
         )
 
-EmbedderClient = openai.Client
 
 @dataclass(slots=True)
 class Embedder:
-    client: EmbedderClient
+    client: openai.Client
     model: str
 
     async def get_embeddings_text(self, data: list[str]) -> list[Embedding]:
@@ -32,6 +31,6 @@ class Embedder:
         res = []
 
         for embedddings, text in zip(result.data, data):
-            res.append(Embedding(vector = embedddings, value = text))
+            res.append(Embedding(vector = embedddings.embedding, value = text))
 
         return res
