@@ -1,6 +1,7 @@
-from dataclasses import dataclass
 import os
 import tomllib
+from dataclasses import dataclass
+from pathlib import Path
 
 from adaptix import Retort
 
@@ -11,6 +12,7 @@ class EmbeddingConfig:
     api_key: str
     model: str
 
+
 @dataclass(slots=True)
 class LLMConfig:
     base_url: str
@@ -19,12 +21,12 @@ class LLMConfig:
     prompt: str
 
 
-
 @dataclass(slots=True)
 class QdrantConfig:
     host: str
     port: int
     dim: int
+
 
 @dataclass(slots=True)
 class Config:
@@ -35,6 +37,6 @@ class Config:
 
 def get_config() -> Config:
     config_path = os.getenv("CONFIG_FILE", "./infra/config.toml")
-    with open(config_path, "rb") as f:
+    with Path.open(config_path, "rb") as f:
         raw_config = tomllib.load(f)
     return Retort().load(raw_config, Config)
