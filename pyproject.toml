@@ -8,6 +8,7 @@ dependencies = [
     "adaptix>=3.0.0b11",
     "dishka>=1.7.2",
     "fastapi>=0.121.3",
+    "fastembed>=0.7.3",
     "langchain-text-splitters>=1.0.0",
     "openai>=2.8.1",
     "pypdf2>=3.0.1",

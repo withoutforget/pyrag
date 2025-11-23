@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Body, File, HTTPException, UploadFile
 from dishka.integrations.fastapi import FromDishka, DishkaRoute
-from pyrag.infra.openai.embedder import Embedder
+from pyrag.infra.openai.embedder import Content, Embedder
 from pyrag.infra.openai.llm import LLMRequest
 from pyrag.infra.parsers.pdf import PDFParser
 from pyrag.infra.parsers.splitter import TextSplitter
@@ -33,7 +33,20 @@ async def upload_kb(collection: str,
 
     text = await text_splitter(raw_text, chunk_size = chunk_size, chunk_overlap = chunk_overlap)
 
-    embeddings = await embedder.get_embeddings_text(text)
+    ## maybe we want to standartize this payload?
+    payload = {
+        "document": file.filename,
+        "content_type": file.content_type
+    }
+
+    embeddings = await embedder.get_embeddings_text([
+        Content(text = t, payload = {
+            "document": file.filename,
+            "content_type": file.content_type,
+            "text": t,
+        }
+                ) for t in text
+    ])
 
     await qdrant.upload_to_collection(
         collection,
@@ -46,16 +59,20 @@ async def search_kb(collection: str,
                     qdrant: FromDishka[Qdrant],
                     embedder:  FromDishka[Embedder]
         ) -> list[dict]:
-    q = await embedder.get_embeddings_text(data = query)
+    q = await embedder.get_embeddings_text(data = [
+        Content(text = t, payload = dict()) for t in query
+    ])
     result = await qdrant.get_from_qdrant(collection, q)
     return result
     
 @router.post("/llm/{collection}")
-async def search_kb(collection: str, 
+async def request_llm(collection: str, 
                     query: Annotated[list[str], Body()],
                     llm: FromDishka[LLMRequest],
                      qdrant: FromDishka[Qdrant],
                     embedder:  FromDishka[Embedder]) -> str:
-    q = await embedder.get_embeddings_text(data = query)
+    q = await embedder.get_embeddings_text(data = [
+        Content(text = t, payload = dict()) for t in query
+    ])
     result = await qdrant.get_from_qdrant(collection, q)
     return await llm.ask(text = query, rag = result)
