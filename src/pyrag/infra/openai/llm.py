@@ -17,7 +17,11 @@ class LLMRequest:
     async def ask(self, text: str, rag: list[dict]) -> str:
         inp = f"{rag}\n\n{text}"
 
-        logger.critical("input: `%s`", inp)
+        logger.info(
+            "Asking llm",
+            query = text,
+            rag = rag
+        )
 
         response = self.client.responses.create(
             model=self.model,

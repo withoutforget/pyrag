@@ -21,7 +21,7 @@ async def request_llm(
     embedder: FromDishka[Embedder],
 ) -> str:
     q = await embedder.get_embeddings_text(
-        data=[Content(text=t, payload={}) for t in query],
+        data=[Content(text=t) for t in query],
     )
     result = await qdrant.get_from_qdrant(collection, q)
     return await llm.ask(text=query, rag=result)

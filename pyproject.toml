@@ -9,6 +9,7 @@ dependencies = [
     "dishka>=1.7.2",
     "fastapi>=0.121.3",
     "langchain-text-splitters>=1.0.0",
+    "lxml>=6.0.2",
     "openai>=2.8.1",
     "pypdf2>=3.0.1",
     "python-multipart>=0.0.20",

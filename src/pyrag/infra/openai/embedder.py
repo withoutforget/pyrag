@@ -1,6 +1,8 @@
+from typing import Optional
 import uuid
 from dataclasses import dataclass
 
+from adaptix import Retort
 import openai
 from qdrant_client.models import PointStruct
 
@@ -19,9 +21,20 @@ class Embedding:
 
 
 @dataclass(slots=True)
+class ContentPayload:
+    filename: str
+    content_type: str
+    
+    content: str
+
+    def as_json(self) -> str:
+        return Retort().dump(self)
+
+
+@dataclass(slots=True)
 class Content:
     text: str
-    payload: dict
+    payload: Optional[ContentPayload] = None
 
 
 @dataclass(slots=True)
@@ -44,7 +57,7 @@ class Embedder:
             res.append(
                 Embedding(
                     vector=embedddings.embedding,
-                    payload=content.payload,
+                    payload=content.payload.as_json() if content.payload else {},
                 ),
             )
 

@@ -3,10 +3,10 @@ from dataclasses import dataclass
 
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
+from qdrant_client.conversions.common_types import QueryResponse
 
 from pyrag.config import QdrantConfig
 from pyrag.infra.openai.embedder import Embedding
-
 
 @dataclass(slots=True)
 class Qdrant:
@@ -46,19 +46,24 @@ class Qdrant:
         collection_name: str,
         data: list[Embedding],
     ) -> list[dict]:
+        SCORE_FIELD = "__score"
+
         result: list[dict] = []
         for embedding in data:
-            response = self.client.query_points(
+
+            response: QueryResponse = self.client.query_points(
                 collection_name=collection_name,
                 query=embedding.vector,
                 using="cvector",
             )
-            res: list[str] = [p.payload for p in response.points]
-            result.append(            
-                dict(
-                    enumerate(
-                        list(filter(lambda p: p is not None, res)),
-                    ),
-                ),               
-            )
+
+            for point in response.points:
+                payload = point.payload
+                payload[SCORE_FIELD] = point.score
+
+                result.append(payload)
+        result.sort(
+            key = lambda i: i[SCORE_FIELD],
+            reverse = True
+        )
         return result
