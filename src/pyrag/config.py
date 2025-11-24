@@ -27,16 +27,23 @@ class QdrantConfig:
     port: int
     dim: int
 
+@dataclass(slots=True)
+class LoggerConfig:
+    debug: bool
+    level: str
+
 
 @dataclass(slots=True)
 class Config:
     embedding: EmbeddingConfig
     qdrant: QdrantConfig
     llm: LLMConfig
-
+    logger: LoggerConfig
 
 def get_config() -> Config:
     config_path = os.getenv("CONFIG_FILE", "./infra/config.toml")
     with Path.open(config_path, "rb") as f:
         raw_config = tomllib.load(f)
     return Retort().load(raw_config, Config)
+
+config: Config = get_config()

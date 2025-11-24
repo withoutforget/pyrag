@@ -9,15 +9,15 @@ from pyrag.infra.parsers.pdf import PDFParser
 from pyrag.infra.parsers.splitter import TextSplitter
 from pyrag.infra.qdrant.qdrant import Qdrant
 
-router = APIRouter(route_class=DishkaRoute, prefix="/api")
+ROUTER = APIRouter(route_class=DishkaRoute)
 
 
-@router.post("/create_kb")
+@ROUTER.post("/create")
 async def create_kb(qdrant: FromDishka[Qdrant]) -> str:
     return await qdrant.generate_random_collection()
 
 
-@router.post("/upload_kb/{collection}")
+@ROUTER.post("/upload/{collection}")
 async def upload_kb(
     collection: str,
     file: Annotated[UploadFile, File()],
@@ -64,7 +64,7 @@ async def upload_kb(
     )
 
 
-@router.post("/search_kb/{collection}")
+@ROUTER.post("/search/{collection}")
 async def search_kb(
     collection: str,
     query: Annotated[list[str], Body()],
@@ -75,18 +75,3 @@ async def search_kb(
         data=[Content(text=t, payload={}) for t in query],
     )
     return await qdrant.get_from_qdrant(collection, q)
-
-
-@router.post("/llm/{collection}")
-async def request_llm(
-    collection: str,
-    query: Annotated[list[str], Body()],
-    llm: FromDishka[LLMRequest],
-    qdrant: FromDishka[Qdrant],
-    embedder: FromDishka[Embedder],
-) -> str:
-    q = await embedder.get_embeddings_text(
-        data=[Content(text=t, payload={}) for t in query],
-    )
-    result = await qdrant.get_from_qdrant(collection, q)
-    return await llm.ask(text=query, rag=result)

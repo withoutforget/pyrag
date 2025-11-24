@@ -8,13 +8,13 @@ dependencies = [
     "adaptix>=3.0.0b11",
     "dishka>=1.7.2",
     "fastapi>=0.121.3",
-    "fastembed>=0.7.3",
     "langchain-text-splitters>=1.0.0",
     "openai>=2.8.1",
     "pypdf2>=3.0.1",
     "python-multipart>=0.0.20",
     "qdrant-client>=1.16.0",
     "ruff>=0.14.6",
+    "structlog>=25.5.0",
     "uvicorn>=0.38.0",
 ]
 [tool.setuptools]

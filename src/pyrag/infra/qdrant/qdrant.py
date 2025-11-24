@@ -54,13 +54,11 @@ class Qdrant:
                 using="cvector",
             )
             res: list[str] = [p.payload for p in response.points]
-            result.append(
-                result.append(
-                    dict(
-                        enumerate(
-                            list(filter(lambda p: p is not None, res)),
-                        ),
+            result.append(            
+                dict(
+                    enumerate(
+                        list(filter(lambda p: p is not None, res)),
                     ),
-                ),
+                ),               
             )
         return result

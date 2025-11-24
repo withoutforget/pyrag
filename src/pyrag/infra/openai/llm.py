@@ -1,11 +1,11 @@
-import logging
 from dataclasses import dataclass
 
 import openai
+import structlog
 
 LLMClient = openai.Client
 
-logger = logging.getLogger(__name__)
+logger = structlog.getLogger(__name__)
 
 
 @dataclass(slots=True)
