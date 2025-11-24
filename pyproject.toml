@@ -17,11 +17,20 @@ dependencies = [
     "structlog>=25.5.0",
     "uvicorn>=0.38.0",
 ]
+
+
+[dependency-groups]
+dev = [
+    "pyrag",
+]
+
+
 [tool.setuptools]
 package-dir = { "" = "src" }
-
+[tool.uv]
+package=true
 [tool.uv.sources]
-ssgame = { path = "src/pyrag" }  # явное указание пути
+pyrag = { workspace = true }
 
 [tool.ruff]
 line-length = 79
