@@ -7,6 +7,7 @@ from pyrag.infra.openai.embedder import Content, Embedder, ContentPayload
 from pyrag.infra.openai.llm import LLMRequest
 from pyrag.infra.parsers.pdf import PDFParser
 from pyrag.infra.parsers.splitter import TextSplitter
+from pyrag.infra.parsers.telegram_json import TelegramJSONParser
 from pyrag.infra.qdrant.qdrant import Qdrant
 from pyrag.infra.parsers.html import HTMLParser
 
@@ -26,6 +27,7 @@ async def upload_kb(
     pdf_parser: FromDishka[PDFParser],
     html_parser: FromDishka[HTMLParser],
     text_splitter: FromDishka[TextSplitter],
+    tg_parser: FromDishka[TelegramJSONParser],
     embedder: FromDishka[Embedder],
     chunk_size: int = Body(default=100),  # noqa
     chunk_overlap: int = Body(default=25),  # noqa
@@ -37,6 +39,8 @@ async def upload_kb(
         raw_text = await pdf_parser.parse(await file.read())
     elif file.content_type == "text/html":
         raw_text = await html_parser.parse(await file.read())
+    elif file.content_type == "application/json":
+        raw_text = await tg_parser.parse(await file.read())
     else:
         raise HTTPException(400, detail="Unknown content_type")
 
